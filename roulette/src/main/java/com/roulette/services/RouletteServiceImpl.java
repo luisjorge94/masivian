@@ -2,7 +2,10 @@ package com.roulette.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
+import com.roulette.model.Bet;
+import com.roulette.model.BetRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,10 +24,30 @@ public class RouletteServiceImpl implements RouletteService {
 	}
 
 	@Override
-	public List<Object> findAll() {
-		List<Object> roulettes = new ArrayList<>();
+	public List<Roulette> findAll() {
+		List<Roulette> roulettes = new ArrayList<>();
 		rouletteRepository.findAll().values().forEach(roulettes::add);
 		return roulettes;
+	}
+
+	@Override
+	public Roulette findById(String rouletteId) {
+		return rouletteRepository.findById(rouletteId);
+	}
+
+	@Override
+	public boolean update(Roulette roulette) {
+		return rouletteRepository.update(roulette);
+	}
+
+	@Override
+	public boolean addBet(BetRequest bet, Roulette roulette) {
+		List<Bet> bets = new ArrayList<>();
+		Bet betRequest = bet.getBet();
+		betRequest.setId(UUID.randomUUID().toString());
+		bets.add(bet.getBet());
+		roulette.setBets(bets);
+		return rouletteRepository.update(roulette);
 	}
 
 }

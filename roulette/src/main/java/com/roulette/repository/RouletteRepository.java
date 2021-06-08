@@ -6,13 +6,13 @@ import com.roulette.model.Roulette;
 
 public interface RouletteRepository {
 
-	Map<String, Object> findAll();
+	Map<String, Roulette> findAll();
 
-	Object findById(String id);
+	Roulette findById(String id);
 
 	String save(Roulette roulette);
 
 	void delete(String id);
 
-	void update(Roulette roulette);
+	boolean update(Roulette roulette);
 }

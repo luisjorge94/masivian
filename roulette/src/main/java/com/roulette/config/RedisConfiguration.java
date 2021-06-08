@@ -1,5 +1,6 @@
 package com.roulette.config;
 
+import com.roulette.model.Roulette;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,8 +19,8 @@ public class RedisConfiguration {
 	}
 	
     @Bean
-    RedisTemplate<String, Object> RedisTemplate(){
-    	RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+    RedisTemplate<String, Roulette> RedisTemplate(){
+    	RedisTemplate<String, Roulette> redisTemplate = new RedisTemplate<>();
     	redisTemplate.setConnectionFactory(jedisConnectionFactory());
     	redisTemplate.setKeySerializer(new StringRedisSerializer());
     	redisTemplate.setHashKeySerializer(new StringRedisSerializer());
