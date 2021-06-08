@@ -2,18 +2,14 @@ package com.roulette.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.roulette.model.BetRequest;
-import com.roulette.model.OpenRequest;
-import com.roulette.model.StatusEnum;
-import org.apache.tomcat.util.json.JSONParser;
+import com.roulette.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.roulette.model.Roulette;
 import com.roulette.services.RouletteService;
 
 @RestController
@@ -38,10 +34,15 @@ public class RouletteController {
 
 	@GetMapping("/openRoulette/{rouletteId}")
 	public ResponseEntity<String> openRoulette(@PathVariable String rouletteId) {
+		boolean isUpdated = false;
 		Roulette roulette = this.rouletteService.findById(rouletteId);
-		roulette.setStatus(StatusEnum.OPEN);
 
-		return new ResponseEntity<String>(this.rouletteService.update(roulette) ? "Sucessfull Operation" : "Denegate Operation", HttpStatus.OK);
+		if (null != roulette) {
+			roulette.setStatus(StatusEnum.OPEN);
+			isUpdated = this.rouletteService.update(roulette);
+		}
+
+		return new ResponseEntity<String>(isUpdated ? "Sucessfull Operation" : "Denegate Operation", HttpStatus.OK);
 	}
 
 	@PostMapping("/bet")
@@ -49,6 +50,7 @@ public class RouletteController {
 		String response = "";
 
 		System.out.println(bet.toString());
+		System.out.println("UserId: " +  userId);
 		if (null == bet && bet.getBet() == null)
 			response = "Debe ingresar una apuesta";
 		else if (bet.getRouletteId() == null && bet.getRouletteId() == "")
@@ -68,5 +70,40 @@ public class RouletteController {
 		}
 
 		return new ResponseEntity<String>(response, HttpStatus.OK);
+	}
+
+	@GetMapping("/closeRoulette/{rouletteId}")
+	public ResponseEntity<BetWinner> closeRoulette(@PathVariable String rouletteId) {
+		Roulette roulette = this.rouletteService.findById(rouletteId);
+
+		BetWinner winners = new BetWinner();
+
+		if (null != roulette) {
+			roulette.setStatus(StatusEnum.CLOSE);
+
+			// Winner number
+			int numberWinner = (int) (Math.random() * 36);
+
+			List<Bet> colorBets = new ArrayList<>();
+
+			winners.setNumberWinner(numberWinner);
+
+			for (Bet bet : roulette.getBets()) {
+				if (bet.getType().equals(BetTypeEnum.NUMBER) && (int) bet.getBetNumber() == numberWinner)
+					bet.setValueWinning(bet.getBetValue() * 5);
+				else if (bet.getType().equals(BetTypeEnum.COLOR) && (bet.getBetNumber() % 2 == 0 && bet.getColor().equals(ColorEnum.RED)) && numberWinner % 2 == 0)
+					bet.setValueWinning(bet.getBetValue() * 1.8);
+				else if (bet.getType().equals(BetTypeEnum.COLOR) && (bet.getBetNumber() % 2 != 0 && bet.getColor().equals(ColorEnum.BLACK)) && numberWinner % 2 != 0)
+					bet.setValueWinning(bet.getBetValue() * 1.8);
+				else
+					bet.setValueWinning(0D);
+			}
+
+			List<Bet> bets = roulette.getBets().stream().filter(b -> b.getValueWinning() > 0D).collect(Collectors.toList());
+
+			winners.setBetWinners(bets);
+		}
+
+		return new ResponseEntity<BetWinner>(winners, HttpStatus.OK);
 	}
 }

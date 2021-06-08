@@ -14,17 +14,20 @@ public class Bet implements Serializable {
 
     private Double betValue;
 
+    private Double valueWinning = 0D;
+
     private String userId;
 
     public Bet(){
     }
 
-    public Bet(String id, BetTypeEnum type, Integer betNumber, ColorEnum color, Double betValue, String userId) {
+    public Bet(String id, BetTypeEnum type, Integer betNumber, ColorEnum color, Double betValue, Double valueWinning, String userId) {
         this.id = id;
         this.type = type;
         this.betNumber = betNumber;
         this.color = color;
         this.betValue = betValue;
+        this.valueWinning = valueWinning;
         this.userId = userId;
     }
 
@@ -76,6 +79,14 @@ public class Bet implements Serializable {
         this.userId = userId;
     }
 
+    public Double getValueWinning() {
+        return valueWinning;
+    }
+
+    public void setValueWinning(Double valueWinning) {
+        this.valueWinning = valueWinning;
+    }
+
     @Override
     public String toString() {
         return "Bet{" +
@@ -85,6 +96,7 @@ public class Bet implements Serializable {
                 ", color=" + color +
                 ", betValue=" + betValue +
                 ", userId=" + userId +
+                ", valueWinning=" + valueWinning +
                 '}';
     }
 }

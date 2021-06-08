@@ -63,6 +63,7 @@ public class RouletteRepositoryImpl implements RouletteRepository {
 		try {
 			redisTemplate.opsForHash().put(KEY, roulette.getId(), roulette);
 		} catch (Exception ex) {
+			System.out.println("Error al actualizar Objeto Roulette: " + ex);
 			logger.error("Error al actualizar Objeto Roulette: " + ex);
 			return false;
 		}

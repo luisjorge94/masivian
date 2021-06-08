@@ -1,6 +1,8 @@
 package com.roulette.model;
 
-public class BetRequest {
+import java.io.Serializable;
+
+public class BetRequest implements Serializable {
 
     private String rouletteId;
 

@@ -46,7 +46,10 @@ public class RouletteServiceImpl implements RouletteService {
 		Bet betRequest = bet.getBet();
 		betRequest.setId(UUID.randomUUID().toString());
 		bets.add(bet.getBet());
-		roulette.setBets(bets);
+		if(null == roulette.getBets())
+			roulette.setBets(bets);
+		else
+			roulette.getBets().addAll(bets);
 		return rouletteRepository.update(roulette);
 	}
 
